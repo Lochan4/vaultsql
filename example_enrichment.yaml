@@ -1,0 +1,93 @@
+# enrichment.yaml — VaultSQL Business Context
+#
+# This is the ONLY file you need to edit. It teaches VaultSQL your domain language.
+# After editing, run `vaultsql reindex` to update the search index.
+#
+# enrichment.yaml lives alongside your project (e.g., in git).
+# Do not put database credentials here — use .env for that.
+
+tables:
+  # Add an entry for each table where you want to add business context.
+  # Table names must exactly match your database table names.
+
+  users:
+    description: "registered accounts on the platform"
+    synonyms:
+      - people
+      - customers
+      - members
+      - clients
+      - accounts
+    columns:
+      created_at: "when the user first signed up"
+      plan: "subscription tier — values: free, starter, pro"
+      last_login_at: "most recent login timestamp"
+
+  orders:
+    description: "purchase transactions placed by users"
+    synonyms:
+      - purchases
+      - transactions
+      - sales
+      - invoices
+    columns:
+      total_amount: "final price paid including tax"
+      status: "order state — values: pending, completed, refunded, cancelled"
+      created_at: "when the order was placed"
+
+  products:
+    description: "items available for purchase in the catalog"
+    synonyms:
+      - items
+      - catalog
+      - listings
+      - SKUs
+    columns:
+      price: "listed price before any discounts"
+      category: "product category grouping"
+
+
+# Business glossary — maps domain terms to SQL patterns.
+# This is the most impactful thing you can fill in.
+glossary:
+  revenue:
+    definition: "total money earned from completed orders"
+    aliases:
+      - make
+      - earn
+      - earnings
+      - income
+      - sales
+      - GMV
+    sql_pattern: "SUM(orders.total_amount) WHERE orders.status = 'completed'"
+    maps_to_tables:
+      - orders
+
+  active_user:
+    definition: "a user who logged in within the last 30 days"
+    aliases:
+      - active users
+      - engaged users
+      - monthly active
+      - MAU
+    sql_pattern: "users.last_login_at >= NOW() - INTERVAL '30 days'"
+    maps_to_tables:
+      - users
+
+  churn:
+    definition: "users who have not logged in for more than 90 days"
+    aliases:
+      - churned
+      - inactive users
+      - lost users
+    sql_pattern: "users.last_login_at < NOW() - INTERVAL '90 days'"
+    maps_to_tables:
+      - users
+
+
+# Model configuration (optional — defaults are set in claude_runner.py)
+# models:
+#   anchor_extraction: claude-haiku-4-5-20251001
+#   sql_simple: claude-haiku-4-5-20251001
+#   sql_medium: claude-sonnet-4-6
+#   sql_complex: claude-sonnet-4-6
