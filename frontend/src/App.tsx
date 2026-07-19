@@ -1,14 +1,9 @@
 import { useConnectionStore } from './store/connection'
 import Sidebar from './components/layout/Sidebar'
+import DBConnector from './components/DBConnector'
 import styles from './App.module.css'
 
-// Lazy imports — filled in later stages
-const DBConnector = () => (
-  <div className={styles.placeholder}>
-    <p>DB Connector — Stage 5</p>
-  </div>
-)
-
+// Placeholder — replaced in Stage 7
 const Chat = () => (
   <div className={styles.placeholder}>
     <p>Chat — Stage 7</p>
