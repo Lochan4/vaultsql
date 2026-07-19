@@ -42,6 +42,16 @@
 }
 
 /* Fields */
+.fieldRow {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-end;
+}
+
+.fieldRow > .field {
+  margin: 0;
+}
+
 .field {
   display: flex;
   flex-direction: column;

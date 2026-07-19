@@ -10,6 +10,14 @@
 export interface Connection {
   alias: string
   connection_string: string
+  enrichment_path?: string
+}
+
+export interface ConnectionResponse {
+  alias: string
+  dialect: string
+  tables: string[]
+  synthetic_examples_added: number
 }
 
 export interface QueryRequest {
@@ -128,7 +136,7 @@ async function request<T>(
 
 export const connections = {
   save: (data: Connection) =>
-    request<{ status: string; alias: string }>('/api/connections', {
+    request<ConnectionResponse>('/api/connections', {
       method: 'POST',
       body: JSON.stringify(data),
     }),
@@ -140,7 +148,7 @@ export const connections = {
     ),
 
   list: () =>
-    request<{ aliases: string[] }>('/api/connections'),
+    request<{ connections: string[] }>('/api/connections'),
 }
 
 // ── Query ─────────────────────────────────────────────────────────────────────
