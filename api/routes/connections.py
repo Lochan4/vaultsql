@@ -20,6 +20,16 @@ _CONNECTIONS_FILE = Path(".vaultsql/connections.json")
 _ENRICHMENT_FILE  = Path("enrichment.yaml")
 
 
+class TestRequest(BaseModel):
+    connection_string: str
+
+
+class TestResponse(BaseModel):
+    ok: bool
+    dialect: str | None = None
+    error: str | None = None
+
+
 class ConnectionRequest(BaseModel):
     alias: str                  # e.g. "production-pg"
     connection_string: str      # e.g. "postgresql://user:pass@host/db"
@@ -31,6 +41,30 @@ class ConnectionResponse(BaseModel):
     dialect: str
     tables: list[str]
     synthetic_examples_added: int
+
+
+@router.post("/test", response_model=TestResponse)
+async def test_connection(body: TestRequest):
+    """
+    Quick connectivity check — SQLAlchemy connect + SELECT 1 + dispose.
+    Does NOT introspect schema or save anything. Called by the UI before save.
+    Times out at 5 seconds to avoid hanging the browser.
+    """
+    try:
+        from sqlalchemy import create_engine, text
+
+        kwargs: dict = {}
+        if "sqlite" not in body.connection_string:
+            kwargs["connect_args"] = {"connect_timeout": 5}
+
+        engine = create_engine(body.connection_string, **kwargs)
+        with engine.connect() as conn:
+            conn.execute(text("SELECT 1"))
+        dialect = engine.dialect.name
+        engine.dispose()
+        return TestResponse(ok=True, dialect=dialect)
+    except Exception as e:
+        return TestResponse(ok=False, error=str(e))
 
 
 @router.post("", response_model=ConnectionResponse)
