@@ -22,13 +22,15 @@ ModelTier = Literal[
 
 # Default models per task — can be overridden via enrichment.yaml
 TASK_MODELS: dict[str, ModelTier] = {
-    "anchor_extraction": "claude-haiku-4-5-20251001",
-    "joinability":       "claude-haiku-4-5-20251001",
-    "sql_simple":        "claude-haiku-4-5-20251001",
-    "sql_medium":        "claude-sonnet-4-6",
-    "sql_complex":       "claude-sonnet-4-6",
-    "synthesis":         "claude-sonnet-4-6",
-    "summarization":     "claude-haiku-4-5-20251001",
+    "anchor_extraction":   "claude-haiku-4-5-20251001",
+    "joinability":         "claude-haiku-4-5-20251001",
+    "sql_simple":          "claude-haiku-4-5-20251001",
+    "sql_medium":          "claude-sonnet-4-6",
+    "sql_complex":         "claude-sonnet-4-6",
+    "synthesis":           "claude-sonnet-4-6",
+    "summarization":       "claude-haiku-4-5-20251001",
+    "knowledge_extraction": "claude-haiku-4-5-20251001",
+    "reference_detection":  "claude-haiku-4-5-20251001",
 }
 
 
