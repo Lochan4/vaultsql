@@ -1,0 +1,69 @@
+.block {
+  background: var(--bg-input);
+  border: 1px solid var(--border-mid);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-1) var(--space-3);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-elevated);
+}
+
+.lang {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+}
+
+.copyBtn {
+  font-family: var(--font-ui);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--fg-muted);
+  background: none;
+  border: 1px solid var(--border-mid);
+  border-radius: var(--radius-sm);
+  padding: 1px var(--space-2);
+  cursor: pointer;
+  transition:
+    color var(--duration-fast) var(--ease-standard),
+    background var(--duration-fast) var(--ease-standard);
+}
+
+.copyBtn:hover {
+  color: var(--fg);
+  background: var(--bg-surface);
+}
+
+.code {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  line-height: 1.7;
+  color: var(--fg);
+  padding: var(--space-3) var(--space-4);
+  white-space: pre;
+  overflow-x: auto;
+  margin: 0;
+}
+
+/* Syntax highlighting — injected via dangerouslySetInnerHTML */
+.code :global(.sql-keyword) {
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.code :global(.sql-string) {
+  color: var(--success);
+}
+
+.code :global(.sql-comment) {
+  color: var(--fg-subtle);
+}
