@@ -46,6 +46,12 @@ class QueryResponse(BaseModel):
 async def run_query(body: QueryRequest, request: Request):
     connection_string = load_connection(body.connection_alias)
 
+    # 0. Cross-session reference detection (knowledge graph)
+    memory_mgr = request.app.state.memory_mgr
+    cross_session_context = memory_mgr.resolve_cross_session_reference(
+        body.chat_id, body.question
+    )
+
     # 1. Introspect schema
     try:
         inspector = Introspector(connection_string)
@@ -85,6 +91,7 @@ async def run_query(body: QueryRequest, request: Request):
         examples=examples,
         model=routing.model,
         dialect=snapshot.dialect,
+        cross_session_context=cross_session_context,
     )
 
     if not gen_result.sql:
@@ -102,7 +109,6 @@ async def run_query(body: QueryRequest, request: Request):
     viz = visualize(exec_result.data, body.question)
 
     # 11. Update conversation memory
-    memory_mgr = request.app.state.memory_mgr
     memory_mgr.add_message(body.chat_id, role="user", content=body.question)
     memory_mgr.add_message(
         body.chat_id,
