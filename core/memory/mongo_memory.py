@@ -144,6 +144,11 @@ class MongoMemory:
         doc = self._chats.find_one({"chat_id": chat_id}, {"_id": 0, "summary": 1})
         return doc.get("summary", "") if doc else ""
 
+    def get_db_alias(self, chat_id: str) -> str:
+        """Return the DB connection alias used in a chat session."""
+        doc = self._chats.find_one({"chat_id": chat_id}, {"_id": 0, "db_alias": 1})
+        return doc.get("db_alias", "") if doc else ""
+
     def list_chats(self, limit: int = 20) -> list[dict]:
         """List most recent chats (for chat history sidebar in UI)."""
         cursor = (
