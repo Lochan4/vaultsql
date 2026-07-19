@@ -1,0 +1,240 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+/* ── Thread ── */
+.thread {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-8) var(--space-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.msgRow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* ── Empty state ── */
+.emptyState {
+  margin: auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  max-width: 480px;
+}
+
+.emptyTitle {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--fg-strong);
+  letter-spacing: -0.01em;
+}
+
+.emptySubtitle {
+  font-size: var(--text-sm);
+  color: var(--fg-muted);
+}
+
+.chips {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: 100%;
+}
+
+.chip {
+  font-family: var(--font-ui);
+  font-size: var(--text-sm);
+  color: var(--fg);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-mid);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  cursor: pointer;
+  text-align: left;
+  transition:
+    background var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard);
+}
+
+.chip:hover {
+  background: var(--bg-surface);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ── Feedback row ── */
+.feedbackRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding-left: var(--space-1);
+}
+
+.feedbackLabel {
+  font-size: var(--text-xs);
+  color: var(--fg-subtle);
+}
+
+.feedbackBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  opacity: 0.5;
+  transition: opacity var(--duration-fast) var(--ease-standard);
+  padding: 0 2px;
+}
+
+.feedbackBtn:hover { opacity: 1; }
+
+/* ── Loading bubble ── */
+.loadingBubble {
+  align-self: flex-start;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  animation: fadeUp var(--duration-base) var(--ease-standard) both;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.loadingSteps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.step {
+  font-size: var(--text-sm);
+  color: var(--fg-subtle);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  transition: color var(--duration-base) var(--ease-standard);
+}
+
+.stepDone {
+  color: var(--success);
+}
+
+.stepActive {
+  color: var(--fg);
+  font-weight: 500;
+}
+
+.pulse {
+  display: inline-block;
+  animation: pulseDot 1s ease-in-out infinite;
+  color: var(--accent);
+}
+
+@keyframes pulseDot {
+  0%, 100% { opacity: 0.3; }
+  50%       { opacity: 1; }
+}
+
+/* ── Error bubble ── */
+.errorBubble {
+  align-self: flex-start;
+  background: var(--error-dim);
+  border: 1px solid rgba(184, 84, 80, 0.25);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  animation: fadeUp var(--duration-base) var(--ease-standard) both;
+}
+
+.errorText {
+  font-size: var(--text-sm);
+  color: var(--error);
+  font-weight: 500;
+}
+
+.errorHint {
+  font-size: var(--text-xs);
+  color: var(--fg-muted);
+}
+
+/* ── Input bar ── */
+.inputBar {
+  height: var(--inputbar-height);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 0 var(--space-6);
+  background: var(--bg-surface);
+  flex-shrink: 0;
+}
+
+.textarea {
+  flex: 1;
+  font-family: var(--font-ui);
+  font-size: var(--text-base);
+  color: var(--fg);
+  background: var(--bg-input);
+  border: 1px solid var(--border-mid);
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-3);
+  resize: none;
+  outline: none;
+  min-height: 40px;
+  max-height: 120px;
+  line-height: var(--leading-base);
+  transition: border-color var(--duration-fast) var(--ease-standard);
+}
+
+.textarea::placeholder {
+  color: var(--fg-muted);
+}
+
+.textarea:focus {
+  border-color: var(--accent);
+}
+
+.textarea:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.sendBtn {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  background: var(--accent);
+  color: var(--accent-fg);
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--duration-fast) var(--ease-standard),
+              opacity var(--duration-fast) var(--ease-standard);
+}
+
+.sendBtn:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.sendBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
