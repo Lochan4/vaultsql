@@ -54,6 +54,7 @@ def generate(
     examples: list[Example],
     model: ModelTier,
     dialect: str = "postgresql",
+    cross_session_context: dict | None = None,
 ) -> GenerationResult:
     """
     Generate SQL for the user question using the pre-solved schema context.
@@ -77,6 +78,7 @@ def generate(
         enrichment=enrichment,
         examples=examples,
         dialect=dialect,
+        cross_session_context=cross_session_context,
     )
 
     result = run_json(prompt=prompt, task=_task_for_model(model), model=model)
@@ -103,8 +105,21 @@ def _build_prompt(
     enrichment: Enrichment,
     examples: list[Example],
     dialect: str,
+    cross_session_context: dict | None = None,
 ) -> str:
     parts: list[str] = []
+
+    # 0. Past session context (injected when user referenced a prior session)
+    if cross_session_context:
+        entity_names = [e["name"] for e in cross_session_context.get("entities", [])]
+        entity_str = ", ".join(entity_names[:8]) if entity_names else "none extracted"
+        parts.append("[Past session context the user is referencing]")
+        parts.append(cross_session_context.get("topic_summary", ""))
+        parts.append(f"Key entities from that session: {entity_str}")
+        parts.append(
+            "Use this context to understand what the user is referring to. "
+            "Do NOT copy SQL from it directly — generate fresh SQL for the current question.\n"
+        )
 
     # 1. Dialect
     parts.append(f"SQL dialect: {dialect.upper()}")
