@@ -53,8 +53,8 @@ Foreground: #71797E   — steel gray, neutral and readable
 --fg-subtle:   #C5CBCE   /* dividers, disabled text */
 
 /* Accent */
---accent:      #5B7FA6   /* muted slate blue — CTAs, links, active states */
---accent-dim:  rgba(91, 127, 166, 0.12)   /* accent backgrounds */
+--accent:      #A07850   /* warm caramel brown — CTAs, links, active states */
+--accent-dim:  rgba(160, 120, 80, 0.12)   /* accent backgrounds */
 --accent-fg:   #FFFFF0   /* text on accent backgrounds */
 
 /* Semantic */
@@ -74,7 +74,8 @@ Foreground: #71797E   — steel gray, neutral and readable
 - NO pure black — use `--fg-strong` (#4A5055) for the darkest text
 - NO gradients — flat color only
 - NO drop shadows — use `--border` or `--border-mid` for elevation
-- NO third accent colors — slate blue + semantic colors only
+- NO third accent colors — warm brown + semantic colors only
+- NO blue anywhere in the UI
 
 ---
 
@@ -84,7 +85,7 @@ Foreground: #71797E   — steel gray, neutral and readable
 
 | Use | Font | Stack |
 |-----|------|-------|
-| UI / prose | Inter | `'Inter', system-ui, sans-serif` |
+| UI / prose | Space Grotesk | `'Space Grotesk', system-ui, sans-serif` |
 | SQL / code / data | JetBrains Mono | `'JetBrains Mono', 'Fira Code', monospace` |
 
 ### Scale
@@ -97,11 +98,11 @@ Foreground: #71797E   — steel gray, neutral and readable
 ```
 
 ### Rules
-- Body text: Inter 14px weight 400, color `--fg`
-- Headings: Inter weight 600, color `--fg-strong`
+- Body text: Space Grotesk 14px weight 400, color `--fg`
+- Headings: Space Grotesk weight 600, color `--fg-strong`
 - SQL blocks: JetBrains Mono 13px weight 400
 - Result table cells: JetBrains Mono 13px — numbers are data, treat them as code
-- Labels / metadata: Inter 11px weight 500, letter-spacing 0.04em, color `--fg-muted`
+- Labels / metadata: Space Grotesk 11px weight 500, letter-spacing 0.04em, color `--fg-muted`
 - NO font sizes below 11px
 - NO font weights above 600 in body copy
 
@@ -155,9 +156,9 @@ NO pill shapes (no `9999px`) except single-character status badges.
 
 **User bubble:**
 - Background: `--accent-dim`
-- Border: 1px solid `rgba(91, 127, 166, 0.25)`
+- Border: 1px solid `rgba(160, 120, 80, 0.25)`
 - Align: right
-- Font: Inter 14px, color `--fg`
+- Font: Space Grotesk 14px, color `--fg`
 
 **Assistant bubble:**
 - Background: `--bg-surface`
@@ -175,7 +176,7 @@ NO pill shapes (no `9999px`) except single-character status badges.
 
 ### Result tables
 - Full width within bubble
-- Font: JetBrains Mono 13px for cells, Inter 11px weight 500 for headers
+- Font: JetBrains Mono 13px for cells, Space Grotesk 11px weight 500 for headers
 - Header: uppercase, `--fg-muted`, `--border-mid` bottom border
 - Row hover: `--bg-elevated`
 - Numeric columns: right-aligned
@@ -192,7 +193,7 @@ NO pill shapes (no `9999px`) except single-character status badges.
 ### Input bar
 - Background: `--bg-surface`, top border: 1px solid `--border`
 - Single `<textarea>`, grows with content (max 5 lines), no resize handle
-- Font: Inter 14px, color `--fg`
+- Font: Space Grotesk 14px, color `--fg`
 - Send on Enter, newline on Shift+Enter
 - Placeholder: "Ask anything about your data…" color `--fg-muted`
 - Send button: `--accent` fill, `--accent-fg` icon, `--radius-md`
@@ -207,7 +208,7 @@ NO pill shapes (no `9999px`) except single-character status badges.
 ### Sidebar items (chat list)
 - Default: transparent background, `--fg-muted` text
 - Hover: `--bg-elevated`
-- Active: `--accent-dim` background, `--accent` left border 2px, `--fg-strong` text
+- Active: `--accent-dim` background, 2px left border `--accent` (brown), `--fg-strong` text
 - Timestamp: `--fg-subtle`, 11px, right-aligned
 
 ---
@@ -258,7 +259,7 @@ Every interactive element must have all states styled:
 
 **Empty state:**
 - Centered in main area
-- Headline: "Ask anything about your data" — Inter 20px, `--fg-strong`
+- Headline: "Ask anything about your data" — Space Grotesk 20px, `--fg-strong`
 - 3 clickable example question chips — `--bg-elevated` fill, `--border-mid` border
 
 ---
