@@ -58,6 +58,37 @@ async def resume_chat(chat_id: str, request: Request):
     )
 
 
+@router.get("/search")
+async def search_past_sessions(q: str, request: Request, limit: int = 5):
+    """
+    Search past sessions by topic using the knowledge graph.
+
+    Query param:
+      q     — natural language topic to search for
+      limit — max results (default 5)
+
+    Used by the UI to let users browse or reference past sessions.
+    """
+    graph = getattr(request.app.state, "graph", None)
+    if graph is None:
+        return {"sessions": [], "graph_enabled": False}
+
+    matches = graph.search_sessions(q, top_k=limit)
+    return {
+        "sessions": [
+            {
+                "session_id":       m.session_id,
+                "topic_summary":    m.topic_summary,
+                "db_alias":         m.db_alias,
+                "similarity":       m.similarity,
+                "matched_entities": m.matched_entities,
+            }
+            for m in matches
+        ],
+        "graph_enabled": True,
+    }
+
+
 @router.get("/health")
 async def memory_health(request: Request):
     memory_mgr: MemoryManager = request.app.state.memory_mgr

@@ -14,6 +14,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from api.routes import chat, connections, feedback, query
 from core.feedback import FeedbackManager
+from core.memory.graph_memory import GraphMemory
 from core.memory.memory_manager import MemoryManager
 from core.retriever import Retriever
 
@@ -27,15 +28,20 @@ async def lifespan(app: FastAPI):
     feedback_mgr = FeedbackManager(retriever=retriever)
     feedback_mgr.setup()
 
-    memory_mgr = MemoryManager()
+    graph = GraphMemory()
+    graph.setup()
+
+    memory_mgr = MemoryManager(graph=graph)
 
     app.state.retriever = retriever
     app.state.feedback_mgr = feedback_mgr
+    app.state.graph = graph
     app.state.memory_mgr = memory_mgr
 
     yield
 
-    # Shutdown — nothing to clean up (SQLite + ChromaDB handle their own state)
+    # Shutdown
+    graph.close()
 
 
 app = FastAPI(
