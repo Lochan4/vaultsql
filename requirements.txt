@@ -1,0 +1,35 @@
+# VaultSQL — Python dependencies
+# Generated from pyproject.toml
+# Install: pip install -r requirements.txt
+
+# ── Database ──────────────────────────────────────────────────────────────────
+sqlalchemy>=2.0
+psycopg2-binary>=2.9      # PostgreSQL
+pymysql>=1.1              # MySQL
+pyodbc>=5.0               # MSSQL (also requires ODBC Driver 17/18 on OS)
+
+# ── API ───────────────────────────────────────────────────────────────────────
+fastapi>=0.115
+uvicorn[standard]>=0.30
+pydantic>=2.0
+python-dotenv>=1.0
+
+# ── Vector retrieval (few-shot examples) ─────────────────────────────────────
+chromadb>=0.5
+sentence-transformers>=3.0
+
+# ── Memory ───────────────────────────────────────────────────────────────────
+redis>=5.0
+pymongo>=4.8
+kuzu>=0.6
+
+# ── Visualization ─────────────────────────────────────────────────────────────
+matplotlib>=3.9
+pandas>=2.2
+
+# ── Config ───────────────────────────────────────────────────────────────────
+pyyaml>=6.0
+
+# ── CLI ───────────────────────────────────────────────────────────────────────
+typer>=0.12
+rich>=13.0
