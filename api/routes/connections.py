@@ -54,10 +54,16 @@ async def test_connection(body: TestRequest):
         from sqlalchemy import create_engine, text
 
         kwargs: dict = {}
-        if "sqlite" not in body.connection_string:
+        cs = body.connection_string
+        if "sqlite" in cs:
+            pass  # no timeout needed for file-based DB
+        elif "pyodbc" in cs or "mssql" in cs:
+            kwargs["connect_args"] = {"timeout": 5}
+        else:
+            # PostgreSQL and MySQL both support connect_timeout
             kwargs["connect_args"] = {"connect_timeout": 5}
 
-        engine = create_engine(body.connection_string, **kwargs)
+        engine = create_engine(cs, **kwargs)
         with engine.connect() as conn:
             conn.execute(text("SELECT 1"))
         dialect = engine.dialect.name
