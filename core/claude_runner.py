@@ -14,6 +14,8 @@ import json
 import subprocess
 from typing import Any, Literal
 
+from core import token_counter
+
 ModelTier = Literal[
     "claude-haiku-4-5-20251001",
     "claude-sonnet-4-6",
@@ -44,20 +46,24 @@ def run(
     model: ModelTier | None = None,
     system: str | None = None,
     timeout: int = 60,
+    chat_id: str | None = None,
+    db_alias: str | None = None,
 ) -> str:
     """
-    Call `claude -p <prompt>` as a subprocess and return stdout as a string.
+    Call `claude -p <prompt> --output-format json` as a subprocess and return
+    the result text. Token usage and cost are recorded to the usage log.
 
     Args:
-        prompt:  The user prompt to send.
-        task:    Task name — used to pick the default model tier.
-        model:   Override the model (ignores task default).
-        system:  Optional system prompt (prepended to prompt if claude -p
-                 doesn't support --system, we inline it).
-        timeout: Max seconds to wait for the subprocess.
+        prompt:    The user prompt to send.
+        task:      Task name — used to pick the default model tier.
+        model:     Override the model (ignores task default).
+        system:    Optional system prompt (inlined before prompt).
+        timeout:   Max seconds to wait for the subprocess.
+        chat_id:   Optional — tags the usage record to a session.
+        db_alias:  Optional — tags the usage record to a connection.
 
     Returns:
-        Raw stdout string from claude CLI.
+        Text output from Claude.
 
     Raises:
         ClaudeRunnerError: if the subprocess fails or times out.
@@ -71,12 +77,13 @@ def run(
     cmd = [
         "claude",
         "--print",
+        "--output-format", "json",
         "--model", resolved_model,
         full_prompt,
     ]
 
     try:
-        result = subprocess.run(
+        proc = subprocess.run(
             cmd,
             capture_output=True,
             text=True,
@@ -91,13 +98,42 @@ def run(
             "claude CLI not found. Make sure Claude Code is installed and in PATH."
         ) from e
 
-    if result.returncode != 0:
+    if proc.returncode != 0:
         raise ClaudeRunnerError(
-            f"claude CLI exited with code {result.returncode}.\n"
-            f"stderr: {result.stderr.strip()}"
+            f"claude CLI exited with code {proc.returncode}.\n"
+            f"stderr: {proc.stderr.strip()}"
         )
 
-    return result.stdout.strip()
+    raw = proc.stdout.strip()
+
+    # Parse the JSON envelope returned by --output-format json
+    # Expected shape: { "result": "...", "total_cost_usd": 0.001,
+    #                   "usage": { "input_tokens": N, "output_tokens": M } }
+    try:
+        envelope = json.loads(raw)
+        text_out = envelope.get("result", raw)
+
+        # Extract usage for accounting (best-effort — never raise)
+        try:
+            usage     = envelope.get("usage") or {}
+            cost_usd  = envelope.get("total_cost_usd") or envelope.get("cost_usd")
+            token_counter.record(
+                task_type=task,
+                model=resolved_model,
+                cost_usd=cost_usd,
+                input_tokens=usage.get("input_tokens"),
+                output_tokens=usage.get("output_tokens"),
+                chat_id=chat_id,
+                db_alias=db_alias,
+            )
+        except Exception:
+            pass
+
+        return str(text_out).strip()
+
+    except json.JSONDecodeError:
+        # CLI didn't return JSON (older version or flag unsupported) — use raw text
+        return raw
 
 
 def run_json(
@@ -106,6 +142,8 @@ def run_json(
     model: ModelTier | None = None,
     system: str | None = None,
     timeout: int = 60,
+    chat_id: str | None = None,
+    db_alias: str | None = None,
 ) -> Any:
     """
     Same as run() but parses stdout as JSON.
@@ -116,7 +154,10 @@ def run_json(
     Raises:
         ClaudeRunnerError: if output is not valid JSON.
     """
-    raw = run(prompt=prompt, task=task, model=model, system=system, timeout=timeout)
+    raw = run(
+        prompt=prompt, task=task, model=model, system=system,
+        timeout=timeout, chat_id=chat_id, db_alias=db_alias,
+    )
 
     # Strip markdown code fences if Claude wraps output in ```json ... ```
     cleaned = raw.strip()

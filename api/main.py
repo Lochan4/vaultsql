@@ -12,7 +12,8 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from api.routes import chat, connections, feedback, query
+from api.routes import chat, connections, feedback, query, usage
+from core import token_counter
 from core.feedback import FeedbackManager
 from core.memory.graph_memory import GraphMemory
 from core.memory.memory_manager import MemoryManager
@@ -22,6 +23,8 @@ from core.retriever import Retriever
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup — initialize shared resources
+    token_counter.setup()
+
     retriever = Retriever()
     retriever.setup()
 
@@ -62,6 +65,7 @@ app.include_router(connections.router, prefix="/api/connections", tags=["connect
 app.include_router(query.router,       prefix="/api/query",       tags=["query"])
 app.include_router(feedback.router,    prefix="/api/feedback",    tags=["feedback"])
 app.include_router(chat.router,        prefix="/api/chat",        tags=["chat"])
+app.include_router(usage.router,       prefix="/api/usage",       tags=["usage"])
 
 
 @app.get("/health")

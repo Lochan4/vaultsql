@@ -100,6 +100,35 @@ export interface HealthResponse {
   graph?: boolean
 }
 
+export interface UsageTaskRow {
+  task_type: string
+  calls: number
+  input_tokens: number | null
+  output_tokens: number | null
+  cost_usd: number | null
+  avg_cost_usd: number | null
+}
+
+export interface UsageSummary {
+  total_calls: number
+  total_input_tokens: number
+  total_output_tokens: number
+  total_cost_usd: number
+  by_model: { model: string; calls: number; input_tokens: number; output_tokens: number; cost_usd: number }[]
+  by_task: UsageTaskRow[]
+}
+
+export interface UsageCall {
+  timestamp: string
+  task_type: string
+  model: string
+  input_tokens: number | null
+  output_tokens: number | null
+  cost_usd: number | null
+  chat_id?: string
+  db_alias?: string
+}
+
 // ── Error handling ────────────────────────────────────────────────────────────
 
 export class ApiError extends Error {
@@ -169,6 +198,24 @@ export const feedback = {
       method: 'POST',
       body: JSON.stringify(data),
     }),
+}
+
+// ── Chat ──────────────────────────────────────────────────────────────────────
+
+// ── Usage / Token Counter ─────────────────────────────────────────────────────
+
+export const usage = {
+  summary: () =>
+    request<UsageSummary>('/api/usage/summary'),
+
+  byTask: () =>
+    request<{ tasks: UsageTaskRow[] }>('/api/usage/by-task'),
+
+  byChat: (chat_id: string) =>
+    request<{ chat_id: string; calls: UsageCall[] }>(`/api/usage/by-chat/${chat_id}`),
+
+  recent: (limit = 50) =>
+    request<{ calls: UsageCall[] }>(`/api/usage/recent?limit=${limit}`),
 }
 
 // ── Chat ──────────────────────────────────────────────────────────────────────
